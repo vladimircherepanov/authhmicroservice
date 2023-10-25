@@ -6,12 +6,12 @@ import {
   Post,
   UnauthorizedException,
 } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 
 import { SignUpDto } from './dto/signUp.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { AuthService } from './auth.service';
+import { GoogleTokenDto } from './dto/google-token.dto';
 
 @Controller('api/auth')
 export class AuthController {
@@ -29,13 +29,27 @@ export class AuthController {
     return await this.authService.login(loginData);
   }
 
-  @Post('social')
+  @Post('social/google')
   @HttpCode(HttpStatus.CREATED)
-  async social() {}
+  async social(@Body() googleToken: GoogleTokenDto) {
+    return this.authService.socialGoogle(googleToken);
+  }
 
   @Post('refresh')
   @HttpCode(HttpStatus.CREATED)
   async refresh(@Body() refreshData: RefreshTokenDto) {
     return await this.authService.refresh(refreshData);
+  }
+
+  @Post('forgot')
+  @HttpCode(HttpStatus.CREATED)
+  async forgot(@Body() forgotData: RefreshTokenDto) {
+    return await this.authService.forgot(forgotData);
+  }
+
+  @Post('changepassword')
+  @HttpCode(HttpStatus.CREATED)
+  async changePassword(@Body() forgotData: RefreshTokenDto) {
+    return await this.authService.forgot(forgotData);
   }
 }

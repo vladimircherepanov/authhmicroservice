@@ -7,6 +7,7 @@ import { User } from '../users/entities/user.entity';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { UsersController } from '../users/users.controller';
+import { HttpModule, HttpService } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -14,6 +15,12 @@ import { UsersController } from '../users/users.controller';
     UsersModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
+    }),
+    HttpModule.registerAsync({
+      useFactory: () => ({
+        timeout: 5000,
+        maxRedirects: 5,
+      }),
     }),
     AuthModule,
   ],

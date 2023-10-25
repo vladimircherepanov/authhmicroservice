@@ -10,9 +10,15 @@ import { AuthService } from './auth/auth.service';
 import { UsersService } from './users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { UsersController } from './users/users.controller';
+import { HttpModule, HttpService } from '@nestjs/axios';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(dataSourceOptions), UsersModule, AuthModule],
+  imports: [
+    TypeOrmModule.forRoot(dataSourceOptions),
+    UsersModule,
+    AuthModule,
+    HttpModule,
+  ],
   controllers: [AppController, AuthController],
   providers: [AppService, UsersService, AuthService, JwtService],
 })

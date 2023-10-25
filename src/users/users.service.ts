@@ -5,6 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { In } from 'typeorm';
 
 @Injectable()
 export class UsersService {
@@ -27,7 +28,17 @@ export class UsersService {
 
   async getByEmail(email: string) {
     const user = await this.usersRepository.findOne({
-      where: { email: email, provider: 'M' },
+      where: { email: email }, //, provider: In(['M', 'MG']) } ,
+    });
+    if (user) {
+      return { user };
+    }
+    return false;
+  }
+
+  async getByEmailAndProvider(email: string, provider) {
+    const user = await this.usersRepository.findOne({
+      where: { email: email, provider: In(provider) },
     });
     if (user) {
       return { user };
@@ -36,7 +47,7 @@ export class UsersService {
   }
 
   async create(signUpData) {
-    const user = this.usersRepository.create({
+    const user = await this.usersRepository.create({
       id: uuidv4(),
       login: signUpData.email,
       firstname: signUpData.firstname,
@@ -54,8 +65,34 @@ export class UsersService {
     });
     const savedUser = await this.usersRepository.save(user);
 
-    const { id, email, firstname, surname, role } = savedUser;
-    return { id, email, firstname, surname, role };
+    const { id, email, firstname, surname, role, confirmed } = savedUser;
+    return { id, email, firstname, surname, role, confirmed };
+  }
+
+  async createSocial(signUpData) {
+    const existingUser = await this.getByEmail(signUpData.email);
+    if (existingUser) {
+    } else {
+      const user = this.usersRepository.create({
+        id: uuidv4(),
+        login: signUpData.email,
+        firstname: signUpData.firstname,
+        surname: signUpData.surname,
+        email: signUpData.email,
+        password: signUpData.password,
+        role: 'user',
+        confirmed: true,
+        avatarLink: '',
+        phone: '',
+        provider: 'G',
+        version: 1,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+      const savedUser = await this.usersRepository.save(user);
+      const { id, email, firstname, surname, role, confirmed } = savedUser;
+      return { id, email, firstname, surname, role, confirmed };
+    }
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
