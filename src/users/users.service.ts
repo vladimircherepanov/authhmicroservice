@@ -65,8 +65,9 @@ export class UsersService {
     });
     const savedUser = await this.usersRepository.save(user);
 
-    const { id, email, firstname, surname, role, confirmed } = savedUser;
-    return { id, email, firstname, surname, role, confirmed };
+    const { id, email, firstname, surname, role, confirmed, avatarLink } =
+      savedUser;
+    return { id, email, firstname, surname, role, confirmed, avatarLink };
   }
 
   async createSocial(signUpData) {
@@ -76,13 +77,13 @@ export class UsersService {
       const user = this.usersRepository.create({
         id: uuidv4(),
         login: signUpData.email,
-        firstname: signUpData.firstname,
-        surname: signUpData.surname,
+        firstname: signUpData.given_name,
+        surname: signUpData.family_name,
         email: signUpData.email,
-        password: signUpData.password,
+        password: signUpData.email,
         role: 'user',
         confirmed: true,
-        avatarLink: '',
+        avatarLink: signUpData.picture,
         phone: '',
         provider: 'G',
         version: 1,
@@ -90,8 +91,9 @@ export class UsersService {
         updatedAt: Date.now(),
       });
       const savedUser = await this.usersRepository.save(user);
-      const { id, email, firstname, surname, role, confirmed } = savedUser;
-      return { id, email, firstname, surname, role, confirmed };
+      const { id, email, firstname, surname, role, confirmed, avatarLink } =
+        savedUser;
+      return { id, email, firstname, surname, role, confirmed, avatarLink };
     }
   }
 
